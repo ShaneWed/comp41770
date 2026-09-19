@@ -4,21 +4,22 @@ import org.apache.commons.codec.digest.DigestUtils;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Block {
     private final Instant timestamp;
     // Should data just be transactions? Probably.
-    private final ArrayList<String> data;
+    private final List<Transaction> data;
     private String previousHash = "";
     private String hash;
 
-    public Block(ArrayList<String> data) {
+    public Block(List<Transaction> data) {
         this.timestamp = Instant.now();
         this.data = data;
         this.hash = calculateHash();
     }
 
-    public Block(ArrayList<String> data, String previousHash) {
+    public Block(List<Transaction> data, String previousHash) {
         this.timestamp = Instant.now();
         this.data = data;
         this.previousHash = previousHash;
@@ -30,7 +31,7 @@ public class Block {
     }
 
     // Should this return status?
-    public void addData(ArrayList<String> newDataList) {
+    public void addData(List<Transaction> newDataList) {
         this.data.addAll(newDataList);
         this.hash = calculateHash();
     }
@@ -39,7 +40,7 @@ public class Block {
         return timestamp;
     }
 
-    public ArrayList<String> getData() {
+    public List<Transaction> getData() {
         return data;
     }
 

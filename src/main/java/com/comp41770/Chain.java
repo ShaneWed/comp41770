@@ -7,10 +7,8 @@ public class Chain {
     List<Block> blockchain;
 
     // Should this validate immediately upon construction?
-    public Chain(List<Block> blocks) throws Exception {
-        if(blocks.size() < 2) {
-            throw new Exception("Multiple blocks are needed to form a chain...");
-        }
+    // A chain has to consist of multiple blocks
+    public Chain(List<Block> blocks) {
         this.blockchain = blocks;
     }
 
