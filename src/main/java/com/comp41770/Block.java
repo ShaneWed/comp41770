@@ -3,12 +3,12 @@ package com.comp41770;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Block {
     private final Instant timestamp;
     // Should data just be transactions? Probably.
+    // Or could we use generics instead? That would be cool.
     private final List<Transaction> data;
     private String previousHash = "";
     private String hash;

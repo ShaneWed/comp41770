@@ -19,6 +19,7 @@ public class Main {
         System.out.println(block2.getHash());
 
         Transaction transaction1 = new Transaction(1, 2, 100, 1);
+        System.out.println(transaction1);
 
         TransactionProducer transactionProducer = new TransactionProducer("outputs/transactions");
         List<Transaction> transactions = transactionProducer.produceTransactions(5);
