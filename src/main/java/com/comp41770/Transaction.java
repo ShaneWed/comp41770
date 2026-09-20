@@ -2,6 +2,8 @@ package com.comp41770;
 
 import java.io.Serializable;
 
+// IntelliJ really wants to make this a record class, could be a good idea.
+// I'm not sure if that would allow us to validate the data at construction, though, which I would like to do eventually.
 public class Transaction implements Serializable {
     private final int sender;
     private final int receiver;

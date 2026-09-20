@@ -9,13 +9,13 @@ public class Main {
         List<Transaction> data = new LinkedList<>();
         data.add(transaction0);
 
-        Block block1 = new Block(data);
+        Block<Transaction> block1 = new Block<>(data);
         System.out.println(block1.getHash());
         System.out.println(block1.getTimestamp());
         System.out.println(block1.getPreviousHash());
 
         data.add(new Transaction(395, 35, 23459, 999));
-        Block block2 = new Block(data, block1.getHash());
+        Block<Transaction> block2 = new Block<>(data, block1.getHash());
         System.out.println(block2.getHash());
 
         Transaction transaction1 = new Transaction(1, 2, 100, 1);
@@ -30,13 +30,13 @@ public class Main {
         System.out.println("Transactions written to file, reading them back now...");
         transactionProducer.readFromFile();
 
-        Block block3 = new Block(transactions, block2.getHash());
+        Block<Transaction> block3 = new Block<>(transactions, block2.getHash());
 
-        List<Block> blocks = new LinkedList<>();
+        List<Block<Transaction>> blocks = new LinkedList<>();
         blocks.add(block1);
         blocks.add(block2);
         Chain chain = new Chain(blocks);
-        chain.addBlocksToChain(block3);
+        chain.addBlockToChain(block3);
         System.out.println(chain.validateChain());
 
         System.out.println("Hello world!");
