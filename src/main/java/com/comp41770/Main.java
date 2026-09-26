@@ -40,5 +40,8 @@ public class Main {
         System.out.println(chain.validateChain());
 
         System.out.println("Hello world!");
+
+        System.out.println(block3.constructMerkleTree());
+        //block3.constructMerkleTree();
     }
 }
