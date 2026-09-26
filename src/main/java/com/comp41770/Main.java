@@ -43,5 +43,27 @@ public class Main {
 
         System.out.println(block3.constructMerkleTree());
         //block3.constructMerkleTree();
+
+        System.out.println("\n\nWorksheet 3 Task 2\n\n");
+        List<Transaction> transactions10 = transactionProducer.produceTransactions(8);
+        List<Transaction> transactions11 = transactionProducer.produceTransactions(8);
+        List<Transaction> transactions12 = transactionProducer.produceTransactions(8);
+        List<Transaction> transactions13 = transactionProducer.produceTransactions(8);
+        List<Transaction> transactions14 = transactionProducer.produceTransactions(8);
+        List<Transaction> transactions15 = transactionProducer.produceTransactions(8);
+        List<Transaction> transactions16 = transactionProducer.produceTransactions(8);
+        List<Transaction> transactions17 = transactionProducer.produceTransactions(8);
+        Block<Transaction> block10 = new Block<>(transactions10, null);
+        Block<Transaction> block11 = new Block<>(transactions11, block10.getHash());
+        Block<Transaction> block12 = new Block<>(transactions12, block11.getHash());
+        Block<Transaction> block13 = new Block<>(transactions13, block12.getHash());
+        Block<Transaction> block14 = new Block<>(transactions14, block13.getHash());
+        Block<Transaction> block15 = new Block<>(transactions15, block14.getHash());
+        Block<Transaction> block16 = new Block<>(transactions16, block15.getHash());
+        Block<Transaction> block17 = new Block<>(transactions17, block16.getHash());
+        System.out.println("block17 Merkle Tree\n" + block17.getMerkleTree());
+        block17.mine(2);
+
+        System.out.println("Merkle Tree from given transactions\n" + block17.constructMerkleTreeFromData(transactions12));
     }
 }
