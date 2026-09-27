@@ -17,8 +17,8 @@ public class Main {
 
         // Eventually we will change mempool to the most likely sort by transaction fee.
         Mempool<Transaction> mempool = new Mempool<>(Comparator.comparing(Transaction::getTimestamp));
-        TransactionClient client1 = new TransactionClient(mempool);
-        TransactionClient client2 = new TransactionClient(mempool);
+        TransactionClient client1 = new TransactionClient(mempool, 5);
+        TransactionClient client2 = new TransactionClient(mempool, 10);
         TransactionMiner greedyMiner = new TransactionMiner(mempool, blockchain, 1);
         TransactionMiner lazyMiner = new TransactionMiner(mempool, blockchain, 3);
 
@@ -43,6 +43,16 @@ public class Main {
             }
         } catch (InterruptedException exception) {
             Thread.currentThread().interrupt();
+        }
+
+        // To get the remainder of the transactions from the mempool.
+        TransactionMiner lateMiner = new TransactionMiner(mempool, blockchain, 4);
+        Thread lateMinerThread = new Thread(lateMiner);
+        lateMinerThread.start();
+        try {
+            lateMinerThread.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
 
         System.out.println("Blockchain valid: " + blockchain.validateChain());

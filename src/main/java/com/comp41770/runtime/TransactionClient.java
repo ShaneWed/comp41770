@@ -16,9 +16,9 @@ public class TransactionClient implements Runnable {
     private final Random rand = new Random();
     private final Mempool<Transaction> mempool;
 
-    public TransactionClient(Mempool<Transaction> mempool) {
+    public TransactionClient(Mempool<Transaction> mempool, int initialTransactions) {
         this.mempool = mempool;
-        queue.addAll(transactionProducer.produceTransactions(3));
+        queue.addAll(transactionProducer.produceTransactions(initialTransactions));
     }
 
     private void submitTransaction() {
@@ -37,7 +37,7 @@ public class TransactionClient implements Runnable {
         // Submit a new transaction after a bit (how long and how many?)
         while(!queue.isEmpty()) {
             try {
-                Thread.sleep(rand.nextInt(1000, 3000));
+                Thread.sleep(rand.nextInt(500, 1500));
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

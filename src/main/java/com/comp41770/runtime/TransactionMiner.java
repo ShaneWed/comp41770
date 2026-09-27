@@ -39,30 +39,49 @@ public class TransactionMiner implements Runnable {
     private void mineBlock() {
         String previousHash = blockchain.getPreviousHash();
         // New list to avoid issues with passing storedTransactions. Maybe unnecessary, but we're working with threads.
-        Block<Transaction> newBlock = new Block<>(new ArrayList<>(storedTransactions), previousHash);
-        System.out.println("Miner thread #" + Thread.currentThread().getId() + " mining new block...");
-        newBlock.mine(2);
-        if(blockchain.addBlockToChain(newBlock)) {
-            storedTransactions.clear();
-            System.out.println("Miner thread #" + Thread.currentThread().getId() + " done mining block.");
-        } else {
-            System.out.println("Miner thread #" + Thread.currentThread().getId() + " failed to mine block.");
+        int attempts = 0;
+        int maxRetries = 3;
+        while(attempts < maxRetries) {
+            Block<Transaction> newBlock = new Block<>(new ArrayList<>(storedTransactions), previousHash);
+            System.out.println("Miner thread #" + Thread.currentThread().getId() + " mining new block...");
+            newBlock.mine(2);
+            attempts++;
+            if(blockchain.addBlockToChain(newBlock)) {
+                storedTransactions.clear();
+                System.out.println("Miner thread #" + Thread.currentThread().getId() + " done mining block.");
+                return;
+            }
+            System.out.println("Miner thread #" + Thread.currentThread().getId() + " failed to mine block. Retrying...");
         }
+        System.out.println("Miner thread #" + Thread.currentThread().getId() + " failed to mine block. Returning transactions to mempool...");
+        for(Transaction transaction : storedTransactions) {
+            mempool.addToMempool(transaction);
+        }
+        System.out.println("Miner thread #" + Thread.currentThread().getId() + " returned transactions to mempool.");
     }
 
     @Override
     public void run() {
         try {
-            Thread.sleep(6000); // Let the clients submit transactions first.
+            Thread.sleep(3000); // Let the clients submit some transactions first.
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         System.out.println("Miner thread #" + Thread.currentThread().getId() + " running.");
         System.out.println("Miner thread #" + Thread.currentThread().getId() + " needs " + requiredTransactions + " transactions to produce a block.");
         while(!mempool.isEmpty()) {
+            try {
+                Thread.sleep(500, 2500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             if(pollMempool() && storedTransactions.size() >= requiredTransactions) {
                 mineBlock();
             }
+        }
+        if(!storedTransactions.isEmpty()) {
+            System.out.println("Miner thread #" + Thread.currentThread().getId() + " mining remainder of its transactions.");
+            mineBlock();
         }
         System.out.println("Miner thread #" + Thread.currentThread().getId() + " exiting.");
     }
