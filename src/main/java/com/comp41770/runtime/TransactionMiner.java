@@ -13,6 +13,7 @@ import java.util.Optional;
 // I don't see how the blocks will be added to the chain. Practical was not very clear
 // on what we are expected to do. As of now, none of the runtime classes seem to be
 // operating in a functioning blockchain environment
+@SuppressWarnings("BusyWait")
 public class TransactionMiner implements Runnable {
     private final Chain blockchain;
     private final Mempool<Transaction> mempool;

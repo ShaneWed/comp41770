@@ -17,22 +17,7 @@ public class Main {
 
         // Eventually we will change mempool to the most likely sort by transaction fee.
         Mempool<Transaction> mempool = new Mempool<>(Comparator.comparing(Transaction::getTimestamp));
-        TransactionClient client1 = new TransactionClient(mempool, 5);
-        TransactionClient client2 = new TransactionClient(mempool, 10);
-        TransactionMiner greedyMiner = new TransactionMiner(mempool, blockchain, 1);
-        TransactionMiner lazyMiner = new TransactionMiner(mempool, blockchain, 3);
-
-        Thread clientThread1 = new Thread(client1);
-        Thread clientThread2 = new Thread(client2);
-        Thread greedyMinerThread = new Thread(greedyMiner);
-        Thread lazyMinerThread = new Thread(lazyMiner);
-
-        List<Thread> threads = new ArrayList<>();
-
-        threads.add(clientThread1);
-        threads.add(clientThread2);
-        threads.add(greedyMinerThread);
-        threads.add(lazyMinerThread);
+        List<Thread> threads = getThreads(mempool, blockchain);
 
         threads.forEach(Thread::start);
 
@@ -56,5 +41,25 @@ public class Main {
         }
 
         System.out.println("Blockchain valid: " + blockchain.validateChain());
+    }
+
+    private static List<Thread> getThreads(Mempool<Transaction> mempool, Chain blockchain) {
+        TransactionClient client1 = new TransactionClient(mempool, 5);
+        TransactionClient client2 = new TransactionClient(mempool, 10);
+        TransactionMiner greedyMiner = new TransactionMiner(mempool, blockchain, 1);
+        TransactionMiner lazyMiner = new TransactionMiner(mempool, blockchain, 3);
+
+        Thread clientThread1 = new Thread(client1);
+        Thread clientThread2 = new Thread(client2);
+        Thread greedyMinerThread = new Thread(greedyMiner);
+        Thread lazyMinerThread = new Thread(lazyMiner);
+
+        List<Thread> threads = new ArrayList<>();
+
+        threads.add(clientThread1);
+        threads.add(clientThread2);
+        threads.add(greedyMinerThread);
+        threads.add(lazyMinerThread);
+        return threads;
     }
 }

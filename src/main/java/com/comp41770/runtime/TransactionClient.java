@@ -10,6 +10,7 @@ import java.util.Random;
 
 // Eventually I would like the client to also use generics; however, the practical specifically uses transactions.
 // I hate the IntelliJ grammar correction
+@SuppressWarnings("BusyWait")
 public class TransactionClient implements Runnable {
     private final TransactionProducer transactionProducer = new TransactionProducer("/outputs/mempoolTransactions");
     private final Queue<Transaction> queue = new ArrayDeque<>();
