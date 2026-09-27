@@ -30,11 +30,28 @@ public class Chain {
         return true;
     }
 
-    public void addBlocksToChain(List<Block<? extends Block<?>>> blocks) {
-        blockchain.addAll(blocks);
+    public synchronized String getPreviousHash() {
+        return blockchain.get(blockchain.size() - 1).getHash();
     }
 
-    public void addBlockToChain(Block<?> block) {
+    // I'm not sure if this function will work. Have not tested it.
+    public synchronized boolean addBlocksToChain(List<Block<? extends Block<?>>> blocks) {
+        String previousHash = blockchain.get(blockchain.size() - 1).getHash();
+        if(!blocks.get(blocks.size() - 1).getPreviousHash().equals(previousHash)) {
+            return false;
+        }
+        blockchain.addAll(blocks);
+        return true;
+    }
+
+    public synchronized boolean addBlockToChain(Block<?> block) {
+        String previousHash = blockchain.get(blockchain.size() - 1).getHash();
+        if(!block.getPreviousHash().equals(previousHash)) {
+            // Hopefully we don't see this line.
+            System.out.println("Error adding block due to hash!");
+            return false;
+        }
         blockchain.add(block);
+        return true;
     }
 }

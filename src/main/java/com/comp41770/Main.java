@@ -19,8 +19,8 @@ public class Main {
         Mempool<Transaction> mempool = new Mempool<>(Comparator.comparing(Transaction::getTimestamp));
         TransactionClient client1 = new TransactionClient(mempool);
         TransactionClient client2 = new TransactionClient(mempool);
-        TransactionMiner greedyMiner = new TransactionMiner(mempool, 1);
-        TransactionMiner lazyMiner = new TransactionMiner(mempool, 3);
+        TransactionMiner greedyMiner = new TransactionMiner(mempool, blockchain, 1);
+        TransactionMiner lazyMiner = new TransactionMiner(mempool, blockchain, 3);
 
         Thread clientThread1 = new Thread(client1);
         Thread clientThread2 = new Thread(client2);
@@ -36,5 +36,15 @@ public class Main {
 
         threads.forEach(Thread::start);
 
+        // Joining threads so we can validate the blockchain after they've finished.
+        try {
+            for(Thread thread : threads) {
+                thread.join(); // Idk why the forEach was giving an error, but this isn't.
+            }
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+        }
+
+        System.out.println("Blockchain valid: " + blockchain.validateChain());
     }
 }

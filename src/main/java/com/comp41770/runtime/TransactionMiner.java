@@ -1,9 +1,11 @@
 package com.comp41770.runtime;
 
 import com.comp41770.Block;
+import com.comp41770.Chain;
 import com.comp41770.Mempool;
 import com.comp41770.Transaction;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -12,11 +14,13 @@ import java.util.Optional;
 // on what we are expected to do. As of now, none of the runtime classes seem to be
 // operating in a functioning blockchain environment
 public class TransactionMiner implements Runnable {
+    private final Chain blockchain;
     private final Mempool<Transaction> mempool;
     private final List<Transaction> storedTransactions = new LinkedList<>();
     private final int requiredTransactions;
 
-    public TransactionMiner(Mempool<Transaction> mempool, int requiredTransactions) {
+    public TransactionMiner(Mempool<Transaction> mempool, Chain blockchain, int requiredTransactions) {
+        this.blockchain = blockchain;
         this.mempool = mempool;
         this.requiredTransactions = requiredTransactions;
     }
@@ -33,11 +37,17 @@ public class TransactionMiner implements Runnable {
     }
 
     private void mineBlock() {
-        Block<Transaction> newBlock = new Block<>(storedTransactions);
+        String previousHash = blockchain.getPreviousHash();
+        // New list to avoid issues with passing storedTransactions. Maybe unnecessary, but we're working with threads.
+        Block<Transaction> newBlock = new Block<>(new ArrayList<>(storedTransactions), previousHash);
         System.out.println("Miner thread #" + Thread.currentThread().getId() + " mining new block...");
         newBlock.mine(2);
-        System.out.println("Miner thread #" + Thread.currentThread().getId() + " done mining block.");
-        storedTransactions.clear();
+        if(blockchain.addBlockToChain(newBlock)) {
+            storedTransactions.clear();
+            System.out.println("Miner thread #" + Thread.currentThread().getId() + " done mining block.");
+        } else {
+            System.out.println("Miner thread #" + Thread.currentThread().getId() + " failed to mine block.");
+        }
     }
 
     @Override
