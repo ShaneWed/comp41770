@@ -35,7 +35,7 @@ public class TransactionProducer {
         List<Transaction> candidates = new LinkedList<>();
         if(transactionPool.size() < numCandidates) {
             System.out.println("Can only produce " + transactionPool.size() + " candidates...");
-            numCandidates = transactionPool.size() - 1;
+            numCandidates = transactionPool.size();
         }
         for(int i = 0; i < numCandidates; i++) {
             candidates.add(transactionPool.remove());

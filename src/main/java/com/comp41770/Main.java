@@ -2,6 +2,7 @@ package com.comp41770;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.PriorityBlockingQueue;
 
 public class Main {
     public static void main(String[] args) {
@@ -65,5 +66,10 @@ public class Main {
         block17.mine(2);
 
         System.out.println("Merkle Tree from given transactions\n" + block17.constructMerkleTreeFromData(transactions12));
+
+        System.out.println("\n\nWorksheet 4 Task 3\n\n");
+        Mempool<Transaction> mempool = new Mempool<>(new PriorityBlockingQueue<>());
+
+
     }
 }
