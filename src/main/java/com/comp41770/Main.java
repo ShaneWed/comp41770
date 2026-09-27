@@ -1,75 +1,40 @@
 package com.comp41770;
 
-import java.util.LinkedList;
+import com.comp41770.runtime.TransactionClient;
+import com.comp41770.runtime.TransactionMiner;
+
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.PriorityBlockingQueue;
 
 public class Main {
     public static void main(String[] args) {
-        Transaction transaction0 = new Transaction(23, 46, 2095, 0);
-        List<Transaction> data = new LinkedList<>();
-        data.add(transaction0);
-
-        Block<Transaction> block1 = new Block<>(data);
-        System.out.println(block1.getHash());
-        System.out.println(block1.getTimestamp());
-        System.out.println(block1.getPreviousHash());
-
-        data.add(new Transaction(395, 35, 23459, 999));
-        Block<Transaction> block2 = new Block<>(data, block1.getHash());
-        System.out.println(block2.getHash());
-
-        Transaction transaction1 = new Transaction(1, 2, 100, 1);
-        System.out.println(transaction1);
-
-        TransactionProducer transactionProducer = new TransactionProducer("outputs/transactions");
-        List<Transaction> transactions = transactionProducer.produceTransactions(5);
-        for(Transaction i : transactions) {
-            System.out.println(i.toString());
-        }
-        transactionProducer.writeToFile(transactions);
-        System.out.println("Transactions written to file, reading them back now...");
-        transactionProducer.readFromFile();
-
-        Block<Transaction> block3 = new Block<>(transactions, block2.getHash());
-
-        List<Block<Transaction>> blocks = new LinkedList<>();
-        blocks.add(block1);
-        blocks.add(block2);
-        Chain chain = new Chain(blocks);
-        chain.addBlockToChain(block3);
-        System.out.println(chain.validateChain());
-
-        System.out.println("Hello world!");
-
-        System.out.println(block3.constructMerkleTree());
-        //block3.constructMerkleTree();
-
-        System.out.println("\n\nWorksheet 3 Task 2\n\n");
-        List<Transaction> transactions10 = transactionProducer.produceTransactions(8);
-        List<Transaction> transactions11 = transactionProducer.produceTransactions(8);
-        List<Transaction> transactions12 = transactionProducer.produceTransactions(8);
-        List<Transaction> transactions13 = transactionProducer.produceTransactions(8);
-        List<Transaction> transactions14 = transactionProducer.produceTransactions(8);
-        List<Transaction> transactions15 = transactionProducer.produceTransactions(8);
-        List<Transaction> transactions16 = transactionProducer.produceTransactions(8);
-        List<Transaction> transactions17 = transactionProducer.produceTransactions(8);
-        Block<Transaction> block10 = new Block<>(transactions10, null);
-        Block<Transaction> block11 = new Block<>(transactions11, block10.getHash());
-        Block<Transaction> block12 = new Block<>(transactions12, block11.getHash());
-        Block<Transaction> block13 = new Block<>(transactions13, block12.getHash());
-        Block<Transaction> block14 = new Block<>(transactions14, block13.getHash());
-        Block<Transaction> block15 = new Block<>(transactions15, block14.getHash());
-        Block<Transaction> block16 = new Block<>(transactions16, block15.getHash());
-        Block<Transaction> block17 = new Block<>(transactions17, block16.getHash());
-        System.out.println("block17 Merkle Tree\n" + block17.getMerkleTree());
-        block17.mine(2);
-
-        System.out.println("Merkle Tree from given transactions\n" + block17.constructMerkleTreeFromData(transactions12));
-
         System.out.println("\n\nWorksheet 4 Task 3\n\n");
-        Mempool<Transaction> mempool = new Mempool<>(new PriorityBlockingQueue<>());
 
+        Block<String> genesisBlock = new Block<>(List.of("In the beginning"), "hash");
+        genesisBlock.mine(2);
+        Chain blockchain = new Chain(List.of(genesisBlock));
+
+        // Eventually we will change mempool to the most likely sort by transaction fee.
+        Mempool<Transaction> mempool = new Mempool<>(Comparator.comparing(Transaction::getTimestamp));
+        TransactionClient client1 = new TransactionClient(mempool);
+        TransactionClient client2 = new TransactionClient(mempool);
+        TransactionMiner greedyMiner = new TransactionMiner(mempool, 1);
+        TransactionMiner lazyMiner = new TransactionMiner(mempool, 3);
+
+        Thread clientThread1 = new Thread(client1);
+        Thread clientThread2 = new Thread(client2);
+        Thread greedyMinerThread = new Thread(greedyMiner);
+        Thread lazyMinerThread = new Thread(lazyMiner);
+
+        List<Thread> threads = new ArrayList<>();
+
+        threads.add(clientThread1);
+        threads.add(clientThread2);
+        threads.add(greedyMinerThread);
+        threads.add(lazyMinerThread);
+
+        threads.forEach(Thread::start);
 
     }
 }

@@ -1,6 +1,7 @@
 package com.comp41770;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 // IntelliJ really wants to make this a record class, could be a good idea.
 // I'm not sure if that would allow us to validate the data at construction, though, which I would like to do eventually.
@@ -9,6 +10,7 @@ public class Transaction implements Serializable {
     private final int receiver;
     private final int amount; // Will have to do decimals as an int as well
     private final int transactionId; // Will have to implement as a proper ID later
+    private final LocalDateTime timestamp;
 
     // Also will have to find a way to ensure transactions are valid at creation
     // IE sender != receiver, amount > 0, etc.
@@ -18,6 +20,7 @@ public class Transaction implements Serializable {
         this.receiver = receiver;
         this.amount = amount;
         this.transactionId = transactionId;
+        this.timestamp = LocalDateTime.now();
     }
 
     @Override
@@ -39,5 +42,9 @@ public class Transaction implements Serializable {
 
     public int getTransactionId() {
         return transactionId;
+    }
+
+    public LocalDateTime getTimestamp() {
+        return timestamp;
     }
 }

@@ -24,7 +24,7 @@ public class TransactionClient implements Runnable {
     private void submitTransaction() {
         // Handle nulls here or in the run loop?
         mempool.addToMempool(queue.poll());
-        System.out.println("Thread #" + Thread.currentThread().getId() + " submitted transaction to mempool.");
+        System.out.println("Client thread #" + Thread.currentThread().getId() + " submitted transaction to mempool.");
     }
 
     private void generateNewTransaction() {
@@ -33,6 +33,7 @@ public class TransactionClient implements Runnable {
 
     @Override
     public void run() {
+        System.out.println("Client thread #" + Thread.currentThread().getId() + " running.");
         // Submit a new transaction after a bit (how long and how many?)
         while(!queue.isEmpty()) {
             try {
@@ -45,5 +46,6 @@ public class TransactionClient implements Runnable {
                 generateNewTransaction();
             }
         }
+        System.out.println("Client thread #" + Thread.currentThread().getId() + " exiting.");
     }
 }
