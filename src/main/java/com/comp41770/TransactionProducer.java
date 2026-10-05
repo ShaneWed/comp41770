@@ -24,6 +24,7 @@ public class TransactionProducer {
                             rand.nextInt(1, 1000),
                             rand.nextInt(1, 1000),
                             rand.nextInt(1, 999999),
+                            rand.nextInt(1, 9999),
                             ++totalTransactions)
             );
         }

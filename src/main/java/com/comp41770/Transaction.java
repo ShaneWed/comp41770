@@ -10,15 +10,17 @@ public class Transaction implements Serializable {
     private final int receiver;
     private final int amount; // Will have to do decimals as an int as well
     private final int transactionId; // Will have to implement as a proper ID later
+    private final int fee;
     private final LocalDateTime timestamp;
 
     // Also will have to find a way to ensure transactions are valid at creation
     // IE sender != receiver, amount > 0, etc.
     // This could probably be done through TransactionProducer
-    public Transaction(int sender, int receiver, int amount, int transactionId) {
+    public Transaction(int sender, int receiver, int amount, int fee, int transactionId) {
         this.sender = sender;
         this.receiver = receiver;
         this.amount = amount;
+        this.fee = fee;
         this.transactionId = transactionId;
         this.timestamp = LocalDateTime.now();
     }
@@ -38,6 +40,10 @@ public class Transaction implements Serializable {
 
     public int getAmount() {
         return amount;
+    }
+
+    public int getFee() {
+        return fee;
     }
 
     public int getTransactionId() {
