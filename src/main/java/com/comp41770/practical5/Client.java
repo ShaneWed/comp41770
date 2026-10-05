@@ -23,7 +23,7 @@ public class Client {
 
         String message = "";
 
-        while(!message.equals("Over")) {
+        while(!message.equalsIgnoreCase("exit")) {
             try {
                 if (reader != null) {
                     message = reader.readLine();
@@ -32,6 +32,7 @@ public class Client {
                 }
                 if (out != null) {
                     out.writeUTF(message);
+                    out.flush();
                 } else {
                     System.out.println("ERROR: Message was null...");
                 }
