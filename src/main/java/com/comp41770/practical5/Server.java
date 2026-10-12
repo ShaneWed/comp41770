@@ -36,10 +36,12 @@ public class Server {
             while(true) {
                 try {
                     socket = serverSocket.accept();
+                    ServerThread clientThread = new ServerThread(socket);
+                    CLIENTS.add(clientThread);
+                    clientThread.start();
                 } catch (IOException exception) {
                     System.out.println(exception);
                 }
-                new ServerThread(socket).start();
             }
         } catch (IOException exception) {
             System.out.println(exception);
@@ -90,6 +92,16 @@ public class Server {
         return messageCounter;
     }
 
+    public static void removeClient(ServerThread client) {
+        CLIENTS.remove(client);
+    }
+
+    public static void broadcast(String message) {
+        for(ServerThread client : CLIENTS) {
+            client.sendMessage(message);
+        }
+    }
+
     public static void main(String[] args) {
         if(args.length != 2) {
             System.out.println("Usage: java Server <name> <port>");
@@ -112,42 +124,57 @@ public class Server {
 @SuppressWarnings("ThrowablePrintedToSystemOut")
 class ServerThread extends Thread {
     protected Socket socket;
+    private DataInputStream in;
+    private DataOutputStream out;
 
     public ServerThread(Socket socket) {
         this.socket = socket;
     }
 
     public void run() {
-        DataInputStream in;
-        DataOutputStream out;
         try {
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
-        } catch (IOException exception) {
-            System.out.println(exception);
-            return;
-        }
 
-        String message;
+            Server.broadcast("Client " + Thread.currentThread().getId() + " connected to the server.");
 
-        while(true) {
-            try {
+            String message;
+
+            while(true) {
                 message = in.readUTF();
+
                 if(message.equalsIgnoreCase("exit")) {
                     System.out.println("Client closed connection");
                     System.out.println("Server total message count: " + Server.getMessageCounter() + " messages.");
-                    socket.close();
+                    Server.broadcast("Client " + Thread.currentThread().getId() + " disconnected from the server.");
                     return;
                 } else {
-                    System.out.println("Client " + Thread.currentThread().getId() + ": " + message);
+                    String broadcastMessage = "Client " + Thread.currentThread().getId() + ": " + message;
+                    System.out.println(broadcastMessage);
                     Server.incrementCounter();
-                    out.writeUTF(message + "\n");
-                    out.flush();
+                    Server.broadcast(broadcastMessage);
                 }
-            } catch (IOException exception) {
-                System.out.println(exception);
-                return;
             }
+        } catch(IOException exception) {
+            System.out.println(exception);
+        } finally {
+            Server.removeClient(this);
+
+            try {
+                socket.close();
+            } catch(IOException exception) {
+                System.out.println(exception);
+            }
+        }
+    }
+
+    public void sendMessage(String message) {
+        try {
+            out.writeUTF(message);
+            out.flush();
+        } catch(IOException exception) {
+            System.out.println(exception);
+            Server.removeClient(this);
         }
     }
 }

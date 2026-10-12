@@ -39,6 +39,23 @@ public class Client {
             return;
         }
 
+        Thread listenerThread = new Thread(() -> {
+            while(!socket.isClosed()) {
+                try {
+                    String response = in.readUTF();
+                    System.out.println(response);
+                    System.out.print("> ");
+                } catch(IOException exception) {
+                    if(!socket.isClosed()) {
+                        System.out.println(exception);
+                    }
+                    break;
+                }
+            }
+        });
+
+        listenerThread.start();
+
         Scanner scanner = new Scanner(System.in);
         String message = "";
 
@@ -52,9 +69,6 @@ public class Client {
                 if(message.equalsIgnoreCase("exit")) {
                     break;
                 }
-
-                String response = in.readUTF();
-                System.out.print("Server: " + response);
             } catch (IOException exception) {
                 System.out.println(exception);
                 break;
